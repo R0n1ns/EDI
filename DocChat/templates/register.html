@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    {% if show_otp_field %}Verify Your Email{% else %}Register{% endif %}
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    {% if not show_otp_field %}
+                        <!-- Первый шаг: Регистрация -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Corporate Email</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   pattern=".*@(company\.com|corporate\.org)$"
+                                   title="Please use your corporate email address"
+                                   required>
+                            <div class="form-text">Use your corporate email address</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" minlength="8" required>
+                            <div class="form-text">Minimum 8 characters</div>
+                        </div>
+                    {% else %}
+                        <!-- Второй шаг: Ввод OTP -->
+                        <div class="mb-3">
+                            <label for="otp" class="form-label">Verification Code</label>
+                            <input type="text" class="form-control" id="otp" name="otp"
+                                   pattern="\d{6}" maxlength="6"
+                                   title="Please enter the 6-digit verification code"
+                                   required>
+                            <div class="form-text">Enter the 6-digit code sent to your email</div>
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        {% if show_otp_field %}Verify{% else %}Register{% endif %}
+                    </button>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                {% if not show_otp_field %}
+                    <p class="mb-0">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+                {% else %}
+                    <p class="mb-0">Didn't receive the code? <a href="{% url 'register' %}">Resend</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

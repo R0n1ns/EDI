@@ -1,0 +1,45 @@
+:root[data-bs-theme=dark] {
+    --bs-body-bg: #212529;
+    --bs-body-color: #dee2e6;
+}
+
+.card {
+    margin-bottom: 1.5rem;
+    background-color: var(--bs-dark);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.card-header {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.form-control {
+    background-color: var(--bs-dark);
+    border-color: rgba(255, 255, 255, 0.125);
+    color: var(--bs-body-color);
+}
+
+.form-control:focus {
+    background-color: var(--bs-dark);
+    border-color: var(--bs-primary);
+    color: var(--bs-body-color);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.table {
+    margin-bottom: 0;
+    color: var(--bs-body-color);
+}
+
+.alert {
+    margin-bottom: 1.5rem;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
