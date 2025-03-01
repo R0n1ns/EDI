@@ -146,3 +146,12 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'vadimkor2705@gmail.com'
 EMAIL_HOST_PASSWORD = 'tpzv wnme iyln btlz'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+ENCRYPTION_KEY = os.environ.get("ENCRYPTION_KEY", "0123456789ABCDEF0123456789ABCDEF").encode('utf-8')
+
+
+
+MINIO_ENDPOINT = '127.0.0.1:9000'
+MINIO_ACCESS_KEY = 'minioadmin'
+MINIO_SECRET_KEY = 'minioadmin'
+MINIO_BUCKET_NAME = 'data'
+MINIO_SECURE = False  # или False, если не используется TLS

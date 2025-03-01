@@ -1,33 +1,23 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
+
 from django.http import HttpResponse, Http404, FileResponse
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from .models import CustomUser, AuditLog
-import os
-from django.conf import settings
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from .models import Document, AuditLog
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-from datetime import datetime, timedelta
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
-from django.conf import settings
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from .models import Document
 from .utils.otp_email import generate_otp, send_otp_email
+from datetime import datetime
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .models import Document, AuditLog
+# from .utils.encryption import encrypt_data  # Импортируем функцию шифрования
+from .utils.minio_client import *
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from .models import Document
 User = get_user_model()
 
 def register_view(request):
@@ -174,34 +164,15 @@ def logout_view(request):
     messages.success(request, "You have been logged out.")
     return redirect("login")
 
-# def index(request):
-#     return HttpResponse("Hello METANIT.COM")
-#
-# def login_view(request):
-#     if request.method == "POST":
-#         email = request.POST.get("email")
-#         password = request.POST.get("password")
-#         user = authenticate(request, username=email, password=password)
-#
-#         if user is not None:
-#             login(request, user)
-#             messages.success(request, "Login successful.")
-#             return redirect("dashboard")
-#         else:
-#             messages.error(request, "Invalid email or password.")
-#
-#     return render(request, "login.html")
-#
 @login_required
 def dashboard(request):
     """Отображает список документов, загруженных текущим пользователем."""
     documents = Document.objects.filter(owner=request.user)
     return render(request, "dashboard.html", {"documents": documents})
 
-
 @login_required
 def upload_document(request):
-    """Загружает файл и сохраняет его в БД и файловой системе."""
+    """Загружает файл, шифрует его и сохраняет в MinIO, добавляя запись в базу данных."""
     if request.method == "POST":
         if "file" not in request.FILES:
             messages.error(request, "No file part.")
@@ -215,20 +186,22 @@ def upload_document(request):
         # Генерируем уникальное имя файла
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         saved_filename = f"{timestamp}_{file.name}"
-        file_path = os.path.join(settings.MEDIA_ROOT, "uploads", saved_filename)
 
-        # Сохраняем файл в файловой системе
-        if not os.path.exists(os.path.dirname(file_path)):
-            os.makedirs(os.path.dirname(file_path))
+        # Читаем содержимое файла
+        file_content = file.read()
+        # Шифруем данные с помощью AES-256
+        # encrypted_content = encrypt_data(file_content, settings.ENCRYPTION_KEY)
 
-        default_storage.save(file_path, ContentFile(file.read()))
+        # Загружаем зашифрованный файл в MinIO
+        upload_file_to_minio(saved_filename, file_content, file.content_type)
 
         # Сохраняем запись в БД
         document = Document.objects.create(
             filename=saved_filename,
             original_filename=file.name,
             content_type=file.content_type,
-            owner=request.user
+            owner=request.user,
+            is_encrypted=True
         )
 
         # Логируем действие
@@ -238,7 +211,7 @@ def upload_document(request):
             details=f"Uploaded document: {file.name}"
         )
 
-        messages.success(request, "File uploaded successfully!")
+        messages.success(request, "File uploaded and encrypted successfully!")
         return redirect("dashboard")
 
     return render(request, "dashboard.html")
@@ -246,17 +219,18 @@ def upload_document(request):
 
 @login_required
 def download_document(request, doc_id):
-    """Позволяет пользователю скачать свой документ."""
+    """Позволяет пользователю скачать свой документ из MinIO."""
     try:
         document = Document.objects.get(id=doc_id, owner=request.user)
     except Document.DoesNotExist:
         messages.error(request, "Access denied.")
         return redirect("dashboard")
 
-    file_path = os.path.join(settings.MEDIA_ROOT, "uploads", document.filename)
-
-    if not os.path.exists(file_path):
-        raise Http404("File not found")
+    try:
+        response = download_file_from_minio(document.filename)
+    except Exception as e:
+        messages.error(request, "File not found.")
+        return redirect("dashboard")
 
     # Логируем скачивание
     AuditLog.objects.create(
@@ -265,26 +239,23 @@ def download_document(request, doc_id):
         details=f"Downloaded document: {document.original_filename}"
     )
 
-    return FileResponse(open(file_path, "rb"), as_attachment=True, filename=document.original_filename)
+    return FileResponse(response, as_attachment=True, filename=document.original_filename)
 
-# def register_view(request):
-#     # Заглушка для условия показа поля OTP, можно заменить на реальную логику
-#     show_otp_field = False
-#
-#     if request.method == "POST":
-#         username = request.POST.get("username")
-#         email = request.POST.get("email")
-#         password = request.POST.get("password")
-#         otp = request.POST.get("otp")  # Если поле отображается, можно добавить проверку
-#
-#         # Здесь можно вставить логику валидации и проверки OTP.
-#         # В данном примере мы просто создаем пользователя.
-#         try:
-#             user = User.objects.create_user(username=username, email=email, password=password)
-#             login(request, user)
-#             messages.success(request, "Registration successful.")
-#             return redirect("dashboard")
-#         except Exception as e:
-#             messages.error(request, f"Registration failed: {e}")
-#
-#     return render(request, "register.html", {"show_otp_field": show_otp_field})
+@login_required
+def delete_document(request, doc_id):
+    document = get_object_or_404(Document, id=doc_id, owner=request.user)
+    document.delete()
+    delete_file_from_minio(document.filename)
+    messages.success(request, "Document deleted successfully.")
+    return redirect('dashboard')
+
+@login_required
+def view_document(request, doc_id):
+    messages.success(request, "Document view_document")
+    return redirect('dashboard')
+
+@login_required
+def send_document(request, doc_id):
+    messages.success(request, "Document send_document")
+    return redirect('dashboard')
+

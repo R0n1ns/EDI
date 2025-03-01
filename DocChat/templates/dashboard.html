@@ -42,7 +42,7 @@
                                 <tr>
                                     <th>Filename</th>
                                     <th>Upload Date</th>
-                                    <th>Type</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -51,11 +51,21 @@
                                 <tr>
                                     <td>{{ doc.original_filename }}</td>
                                     <td>{{ doc.upload_date|date:"Y-m-d H:i:s" }}</td>
-                                    <td>{{ doc.content_type }}</td>
                                     <td>
-                                        <a href="{% url 'download_document' doc.id %}" class="btn btn-sm btn-secondary">
-                                            Download
-                                        </a>
+                                        {% if doc.status == 'new' %}
+                                            <span class="badge bg-light text-dark rounded-pill">Новый</span>
+                                        {% elif doc.status == 'in_progress' %}
+                                            <span class="badge bg-warning text-dark rounded-pill">В работе</span>
+                                        {% elif doc.status == 'approved' %}
+                                            <span class="badge bg-success text-white rounded-pill">Подтвержден</span>
+                                        {% elif doc.status == 'rejected' %}
+                                            <span class="badge bg-danger text-white rounded-pill">Отказ</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'view_document' doc.id %}" class="btn btn-sm btn-info">Просмотреть</a>
+                                        <a href="{% url 'delete_document' doc.id %}" class="btn btn-sm btn-danger">Удалить</a>
+                                        <a href="{% url 'download_document' doc.id %}" class="btn btn-sm btn-secondary">Скачать</a>
                                     </td>
                                 </tr>
                                 {% endfor %}

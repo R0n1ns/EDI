@@ -3,10 +3,26 @@ from django.db import models
 # Create your models here.
 # your_app/models.py
 
-from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 import secrets
+from django.db import models
+from django.contrib.auth.models import User
+
+class Document(models.Model):
+    STATUS_CHOICES = [
+        ('new', 'New'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+
+    filename = models.CharField(max_length=255)
+    original_filename = models.CharField(max_length=255)
+    content_type = models.CharField(max_length=50)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_encrypted = models.BooleanField(default=False)
+    upload_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
 
 class Role(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -93,20 +109,23 @@ class CustomUser(AbstractUser):
         })
         return user
 
+
 class Document(models.Model):
+    STATUS_CHOICES = [
+        ('new', 'Новый'),
+        ('in_progress', 'В работе'),
+        ('approved', 'Подтвержден'),
+        ('rejected', 'Отказ'),
+    ]
+
     filename = models.CharField(max_length=255)
     original_filename = models.CharField(max_length=255)
-    content_type = models.CharField(max_length=100)
+    content_type = models.CharField(max_length=50)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    is_encrypted = models.BooleanField(default=False)
     upload_date = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name='documents'
-    )
-    is_encrypted = models.BooleanField(default=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
 
-    def __str__(self):
-        return self.original_filename
 
 class AuditLog(models.Model):
     user = models.ForeignKey(

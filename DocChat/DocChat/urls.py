@@ -27,6 +27,9 @@ urlpatterns = [
     path("upload/", views.upload_document, name="upload_document"),
     path("download/<int:doc_id>/", views.download_document, name="download_document"),
     path("auth/", include("webapp.urls")),
+    path('documents/<int:doc_id>/view/', views.view_document, name='view_document'),
+    path('documents/<int:doc_id>/delete/', views.delete_document, name='delete_document'),
+    path('documents/<int:doc_id>/send/', views.send_document, name='send_document'),
 
 ]
 from django.conf import settings

@@ -4,24 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19ac5b9e-6ccc-44de-907b-aeb8138f1933" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dochat.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.notused/описание.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.notused/план.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DocChat/static/css/custom.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DocChat/static/js/main.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DocChat/templates/base.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DocChat/templates/dashboard.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DocChat/templates/login.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DocChat/templates/register.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DocChat/webapp/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DocChat/webapp/utils/otp_email.py" afterDir="false" />
+    <list default="true" id="19ac5b9e-6ccc-44de-907b-aeb8138f1933" name="Changes" comment="init">
+      <change afterPath="$PROJECT_DIR$/DocChat/webapp/utils/encryption.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DocChat/webapp/utils/minio_client.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.notused/описание.txt" beforeDir="false" afterPath="$PROJECT_DIR$/.notused/описание.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/DocChat/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/DocChat/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/DocChat/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/DocChat/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/templates/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/webapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/webapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,12 +26,25 @@
       <list>
         <option value="HTML File" />
         <option value="Python Script" />
+        <option value="Dockerfile" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;R0n1ns&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/R0n1ns/EDI.git&quot;,
+    &quot;accountId&quot;: &quot;b6f81b79-79f0-469c-87b5-c4731e97456a&quot;
+  }
+}</component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -55,11 +61,12 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
     &quot;Python.manage.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/korob/OneDrive/Рабочий стол/проекты/dochat/DocChat/static&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/korob/OneDrive/Рабочий стол/проекты/dochat/.venv/Lib&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -78,7 +85,7 @@
       <recent name="C:\Users\korob\OneDrive\Рабочий стол\проекты\dochat\примеры" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Docker.docker-compose.yml: Compose Deployment">
     <configuration name="manage" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="dochat" />
       <option name="ENV_FILES" value="" />
@@ -102,8 +109,24 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="docker-compose.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="envFilePath" value="" />
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
         <item itemvalue="Python.manage" />
       </list>
     </recent_temporary>
@@ -132,11 +155,28 @@
       <workItem from="1740603059943" duration="1084000" />
       <workItem from="1740647362815" duration="7539000" />
       <workItem from="1740664900607" duration="940000" />
+      <workItem from="1740688012154" duration="865000" />
+      <workItem from="1740688963445" duration="11000" />
+      <workItem from="1740806715797" duration="6437000" />
+      <workItem from="1740850541184" duration="3267000" />
     </task>
+    <task id="LOCAL-00001" summary="init">
+      <option name="closed" value="true" />
+      <created>1740688163121</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1740688163121</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="init" />
+    <option name="LAST_COMMIT_MESSAGE" value="init" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/dochat$manage.coverage" NAME="manage Coverage Results" MODIFIED="1740574986013" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DocChat" />
