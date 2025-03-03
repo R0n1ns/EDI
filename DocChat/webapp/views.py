@@ -1,7 +1,7 @@
 
 from django.http import HttpResponse, Http404, FileResponse
 from django.contrib.auth import authenticate, login, logout
-from .models import CustomUser, AuditLog
+from .models import CustomUser, AuditLog, Role, UserGroup
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
@@ -259,3 +259,199 @@ def send_document(request, doc_id):
     messages.success(request, "Document send_document")
     return redirect('dashboard')
 
+def check_permission_to_users(user):
+    """ Проверка, может ли пользователь управлять правами """
+    if not user.is_authenticated or not user.can_modify_users:
+        messages.error(user, "Access Denied: You do not have permission.")
+        return False
+    return True
+
+@login_required
+def role_management(request):
+    """ Страница управления пользователями и ролями """
+    if not check_permission_to_users(request.user):
+        return redirect('dashboard')
+
+    search_query = request.GET.get("search", "").strip()
+    users = CustomUser.objects.prefetch_related('role').all()
+
+    if search_query:
+        users = users.filter(full_name__icontains=search_query)
+
+    return render(request, "admin/users_dashboard.html", {
+        "users": users
+    })
+
+@login_required
+def edit_role(request, user_id):
+    if not check_permission_to_users(request.user):
+        return redirect('dashboard')
+
+    user = get_object_or_404(CustomUser, id=user_id)
+    user_groups = UserGroup.objects.all()
+
+    if request.method == "POST":
+        user.username = request.POST.get("username", user.username)
+        user.email = request.POST.get("email", user.email)
+        user.full_name = request.POST.get("full_name", user.full_name)
+        user.job_title = request.POST.get("job_title", user.job_title)
+
+        # Обновляем группы
+        selected_group_ids = request.POST.getlist("groups")
+        user.custom_groups.set(UserGroup.objects.filter(id__in=selected_group_ids))
+
+        # Обновляем права пользователя
+        permissions_list = [
+            "can_manage_documents",
+            "can_forward_documents",
+            "can_create_documents",
+            "can_sign_documents",
+            "can_view_statistics",
+            "can_modify_users_groups",
+            "can_assign_permissions",
+        ]
+        for perm in permissions_list:
+            setattr(user, perm, perm in request.POST)
+
+        user.save()
+        messages.success(request, "User details updated successfully.")
+        return redirect("admin_roles_dashboard")
+
+    return render(request, "admin/edit_user.html", {"user": user, "user_groups": user_groups})
+
+
+@login_required
+def create_user(request):
+    if not check_permission_to_users(request.user):
+        return redirect('dashboard')
+
+    user_groups = UserGroup.objects.all()
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        full_name = request.POST.get("full_name", "")
+        job_title = request.POST.get("job_title", "")
+
+        # Проверяем, нет ли уже пользователя с таким email или username
+        if CustomUser.objects.filter(username=username).exists():
+            messages.error(request, "Username already taken.")
+            return redirect("create_user")
+
+        if CustomUser.objects.filter(email=email).exists():
+            messages.error(request, "Email already in use.")
+            return redirect("create_user")
+
+        # Создаем нового пользователя
+        user = CustomUser.objects.create(
+            username=username,
+            email=email,
+            full_name=full_name,
+            job_title=job_title
+        )
+
+        # Применяем группы
+        selected_group_ids = request.POST.getlist("groups")
+        user.custom_groups.set(UserGroup.objects.filter(id__in=selected_group_ids))
+
+        # Применяем разрешения
+        permissions_list = [
+            "can_manage_documents",
+            "can_forward_documents",
+            "can_create_documents",
+            "can_sign_documents",
+            "can_view_statistics",
+            "can_modify_users_groups",
+            "can_assign_permissions",
+        ]
+        for perm in permissions_list:
+            setattr(user, perm, perm in request.POST)
+
+        user.set_password("defaultpassword")  # Установить временный пароль
+        user.save()
+
+        messages.success(request, "User created successfully.")
+        return redirect("admin_roles_dashboard")
+
+    return render(request, "admin/create_user.html", {"user_groups": user_groups})
+
+
+def check_permission_to_groups(user):
+    """ Проверка, может ли пользователь управлять правами """
+    if not user.is_authenticated or not user.can_modify_groups:
+        messages.error(user, "Access Denied: You do not have permission.")
+        return False
+    return True
+
+@login_required
+def group_dashboard(request):
+    """ Страница управления группами """
+    if not check_permission_to_groups(request.user):
+        return redirect('dashboard')
+
+    groups = UserGroup.objects.all()
+    return render(request, "admin/group_dashboard.html", {
+        "groups": groups,
+    })
+
+
+@login_required
+def edit_group(request, group_id):
+    """ Страница изменения группы """
+    if not check_permission_to_groups(request.user):
+        return redirect('dashboard')
+
+    group = get_object_or_404(UserGroup, id=group_id)
+    all_users = CustomUser.objects.all()
+
+    if request.method == "POST":
+        # Обновление названия группы
+        group.name = request.POST.get("name", group.name)
+
+        # Обновление участников
+        member_ids = request.POST.getlist("members")
+        group.members.set(CustomUser.objects.filter(id__in=member_ids))
+
+        # Обновление руководителя группы
+        leader_id = request.POST.get("leader")
+        group.leader = CustomUser.objects.get(id=leader_id) if leader_id else None
+
+        group.save()
+        messages.success(request, "Group updated successfully.")
+        return redirect('group_dashboard')
+
+    return render(request, "admin/edit_group.html", {
+        "group": group,
+        "all_users": all_users,
+    })
+@login_required
+def add_group(request):
+    """Страница добавления новой группы"""
+    if not check_permission_to_groups(request.user):  # Проверяем права пользователя
+        return redirect('dashboard')
+
+    all_users = CustomUser.objects.all()
+
+    if request.method == "POST":
+        name = request.POST.get("name")
+        members_ids = request.POST.getlist("members")
+        leader_id = request.POST.get("leader")
+
+        if name:
+            group = UserGroup.objects.create(name=name)
+
+            if members_ids:
+                group.members.set(CustomUser.objects.filter(id__in=members_ids))
+
+            if leader_id:
+                group.leader = CustomUser.objects.get(id=leader_id)
+
+            group.save()
+            messages.success(request, "New group created successfully.")
+            return redirect('group_dashboard')
+        else:
+            messages.error(request, "Group name is required.")
+
+    return render(request, "admin/add_group.html", {
+        "all_users": all_users
+    })

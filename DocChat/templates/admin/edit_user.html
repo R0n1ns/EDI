@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Edit User: {{ user.full_name|default:user.username|title }}</h2>
+            <p class="text-muted">Modify user details and permissions</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">User Configuration</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                   value="{{ user.username }}" placeholder="Enter username" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   value="{{ user.email }}" placeholder="Enter email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="full_name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name"
+                                   value="{{ user.full_name }}" placeholder="Enter user's full name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="job_title" class="form-label">Job Title</label>
+                            <input type="text" class="form-control" id="job_title" name="job_title"
+                                   value="{{ user.job_title }}" placeholder="Enter user's job title">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Permissions</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="can_manage_documents"
+                                       id="perm_can_manage_documents" {% if user.can_manage_documents %}checked{% endif %}>
+                                <label class="form-check-label" for="perm_can_manage_documents">
+                                    Manage Documents
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="can_forward_documents"
+                                       id="perm_can_forward_documents" {% if user.can_forward_documents %}checked{% endif %}>
+                                <label class="form-check-label" for="perm_can_forward_documents">
+                                    Forward Documents
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="can_create_documents"
+                                       id="perm_can_create_documents" {% if user.can_create_documents %}checked{% endif %}>
+                                <label class="form-check-label" for="perm_can_create_documents">
+                                    Create Documents
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="can_sign_documents"
+                                       id="perm_can_sign_documents" {% if user.can_sign_documents %}checked{% endif %}>
+                                <label class="form-check-label" for="perm_can_sign_documents">
+                                    Sign Documents
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="can_view_statistics"
+                                       id="perm_can_view_statistics" {% if user.can_view_statistics %}checked{% endif %}>
+                                <label class="form-check-label" for="perm_can_view_statistics">
+                                    View Statistics
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="can_modify_users_groups"
+                                       id="perm_can_modify_users_groups" {% if user.can_modify_users_groups %}checked{% endif %}>
+                                <label class="form-check-label" for="perm_can_modify_users_groups">
+                                    Manage Users/Groups
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="can_assign_permissions"
+                                       id="perm_can_assign_permissions" {% if user.can_assign_permissions %}checked{% endif %}>
+                                <label class="form-check-label" for="perm_can_assign_permissions">
+                                    Assign Permissions
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="groups" class="form-label">Groups</label>
+                            <select class="form-select" id="groups" name="groups" multiple>
+                                {% for group in user_groups %}
+                                <option value="{{ group.id }}" {% if group in user.custom_groups.all %}selected{% endif %}>
+                                    {{ group.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">Select groups to which this user should belong.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'admin_roles_dashboard' %}" class="btn btn-secondary">
+                                <i data-feather="arrow-left"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i data-feather="save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">User Information</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Username</dt>
+                        <dd class="col-sm-8">{{ user.username }}</dd>
+
+                        <dt class="col-sm-4">Email</dt>
+                        <dd class="col-sm-8">{{ user.email }}</dd>
+
+                        <dt class="col-sm-4">Created</dt>
+                        <dd class="col-sm-8">{{ user.date_joined }}</dd>
+
+                        <dt class="col-sm-4">Groups</dt>
+                        <dd class="col-sm-8">
+                            {% for group in user.custom_groups.all %}
+                                <span class="badge bg-info">{{ group.name }}</span>
+                            {% empty %}
+                                <span class="text-muted">No groups</span>
+                            {% endfor %}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -22,6 +22,12 @@ from django.urls import include
 from webapp import views
 
 urlpatterns = [
+    path('admin/users/', views.role_management, name='admin_roles_dashboard'),
+    path('admin/users/<int:user_id>/edit/', views.edit_role, name='admin_edit_role'),
+    path('admin/groups/', views.group_dashboard, name='group_dashboard'),
+    path('admin/groups/<int:group_id>/edit/', views.edit_group, name='edit_group'),
+    path('admin/groups/add/', views.add_group, name='add_group'),
+    path("admin/create/", views.create_user, name="create_user"),
     path("admin/", admin.site.urls),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("upload/", views.upload_document, name="upload_document"),

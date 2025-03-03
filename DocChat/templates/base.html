@@ -18,8 +18,7 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+            <div class="collapse navbar-collapse" id="navbarNav">                <ul class="navbar-nav ms-auto">
                     {% if request.user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
@@ -27,6 +26,16 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                         </li>
+                        {% if request.user.is_authenticated and request.user.can_modify_users %}
+                        <li class="nav-item">
+                            <a class="nav-link"  href="{% url 'admin_roles_dashboard' %}">Manage users</a>
+                        </li>
+                        {% endif %}
+                        {% if request.user.is_authenticated and request.user.can_modify_groups %}
+                        <li class="nav-item">
+                            <a class="nav-link"  href="{% url 'group_dashboard' %}">Manage groups</a>
+                        </li>
+                        {% endif %}
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'login' %}">Login</a>

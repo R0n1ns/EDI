@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>User Management</h2>
+            <p class="text-muted">Manage users, roles, and permissions</p>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-lg-6">
+            <form method="GET" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search by Full Name"
+                       value="{{ request.GET.search }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+                <div class="col text-end">
+            <a href="{% url 'create_user' %}" class="btn btn-success">
+            <i data-feather="plus"></i> Add User</a>
+    </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Users List</h4>
+                </div>
+                <div class="card-body">
+                    {% if users %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Job Title</th>
+                                    <th>Groups</th>
+                                    <th>Permissions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ user.full_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.job_title|default:"-" }}</td>
+                                    <td>
+                                        {% if user.custom_groups.all %}
+                                            <ul class="list-unstyled mb-0">
+                                                {% for group in user.custom_groups.all %}
+                                                    <li><span class="badge bg-info">{{ group.name }}</span></li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <span class="text-muted">No groups</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            {% if user.can_manage_documents %}<li>📂 Manage Documents</li>{% endif %}
+                                            {% if user.can_forward_documents %}<li>📤 Forward Documents</li>{% endif %}
+                                            {% if user.can_create_documents %}<li>📝 Create Documents</li>{% endif %}
+                                            {% if user.can_sign_documents %}<li>✍️ Sign Documents</li>{% endif %}
+                                            {% if user.can_view_statistics %}<li>📊 View Statistics</li>{% endif %}
+                                            {% if user.can_modify_users_groups %}<li>👥 Manage Users/Groups</li>{% endif %}
+                                            {% if user.can_assign_permissions %}<li>🔑 Assign Permissions</li>{% endif %}
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'admin_edit_role' user.id %}" class="btn btn-sm btn-outline-secondary">
+                                            <i data-feather="edit-2"></i> Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center">No users found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
