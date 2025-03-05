@@ -1,80 +1,140 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col">
-        <h2>Welcome, {{ request.user.full_name }}</h2>
+<div class="container-fluid">
+    <!-- Приветствие -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Welcome, {{ request.user.full_name }}</h2>
+        </div>
     </div>
-</div>
 
-<div class="row mb-4">
-    <div class="col">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title mb-0">Upload Document</h4>
-            </div>
-            <div class="card-body">
-                <form action="{% url 'upload_document' %}" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="file" class="form-label">Choose file</label>
-                        <input type="file" class="form-control" id="file" name="file" required>
-                        <div class="form-text">Allowed formats: PDF, DOC, DOCX, XLS, XLSX, TXT</div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Upload</button>
-                </form>
+    <!-- Форма загрузки документа -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Upload Document</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'upload_document' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Choose file</label>
+                            <input type="file" class="form-control" id="file" name="file" required>
+                            <div class="form-text">Allowed formats: PDF, DOC, DOCX, XLS, XLSX, TXT</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title mb-0">Your Documents</h4>
-            </div>
-            <div class="card-body">
-                {% if documents %}
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Filename</th>
-                                    <th>Upload Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for doc in documents %}
-                                <tr>
-                                    <td>{{ doc.original_filename }}</td>
-                                    <td>{{ doc.upload_date|date:"Y-m-d H:i:s" }}</td>
-                                    <td>
-                                        {% if doc.status == 'new' %}
-                                            <span class="badge bg-light text-dark rounded-pill">Новый</span>
-                                        {% elif doc.status == 'in_progress' %}
-                                            <span class="badge bg-warning text-dark rounded-pill">В работе</span>
-                                        {% elif doc.status == 'approved' %}
-                                            <span class="badge bg-success text-white rounded-pill">Подтвержден</span>
-                                        {% elif doc.status == 'rejected' %}
-                                            <span class="badge bg-danger text-white rounded-pill">Отказ</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <a href="{% url 'view_document' doc.id %}" class="btn btn-sm btn-info">Просмотреть</a>
-                                        <a href="{% url 'delete_document' doc.id %}" class="btn btn-sm btn-danger">Удалить</a>
-                                        <a href="{% url 'download_document' doc.id %}" class="btn btn-sm btn-secondary">Скачать</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+    <!-- Таблица документов с переключателем -->
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Заголовок с переключателем -->
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">Your Documents</h4>
+                    <ul class="nav nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="own-tab" data-bs-toggle="tab" href="#own-documents">Owned</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="shared-tab" data-bs-toggle="tab" href="#shared-documents">Accessible</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Контент вкладок -->
+                <div class="card-body tab-content">
+                    <!-- Вкладка с собственными документами -->
+                    <div class="tab-pane fade show active" id="own-documents">
+                        {% if documents %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Filename</th>
+                                            <th>Upload Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for doc in documents %}
+                                        <tr>
+                                            <td>{{ doc.original_filename }}</td>
+                                            <td>{{ doc.upload_date|date:"Y-m-d H:i:s" }}</td>
+                                            <td>
+                                                {% if doc.status == 'new' %}
+                                                    <span class="badge bg-light text-dark rounded-pill">Новый</span>
+                                                {% elif doc.status == 'in_progress' %}
+                                                    <span class="badge bg-warning text-dark rounded-pill">В работе</span>
+                                                {% elif doc.status == 'approved' %}
+                                                    <span class="badge bg-success text-white rounded-pill">Подтвержден</span>
+                                                {% elif doc.status == 'rejected' %}
+                                                    <span class="badge bg-danger text-white rounded-pill">Отказ</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'view_document' doc.id %}" class="btn btn-sm btn-info">Просмотреть</a>
+                                                <a href="{% url 'delete_document' doc.id %}" class="btn btn-sm btn-danger">Удалить</a>
+                                                <a href="{% url 'download_document' doc.id %}" class="btn btn-sm btn-secondary">Скачать</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-center">No documents uploaded yet.</p>
+                        {% endif %}
                     </div>
-                {% else %}
-                    <p class="text-center">No documents uploaded yet.</p>
-                {% endif %}
+                    <!-- Вкладка с документами, доступными пользователю -->
+                    <div class="tab-pane fade" id="shared-documents">
+                        {% if accessible_documents %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Filename</th>
+                                            <th>Upload Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for doc in accessible_documents %}
+                                        <tr>
+                                            <td>{{ doc.original_filename }}</td>
+                                            <td>{{ doc.upload_date|date:"Y-m-d H:i:s" }}</td>
+                                            <td>
+                                                {% if doc.status == 'new' %}
+                                                    <span class="badge bg-light text-dark rounded-pill">Новый</span>
+                                                {% elif doc.status == 'in_progress' %}
+                                                    <span class="badge bg-warning text-dark rounded-pill">В работе</span>
+                                                {% elif doc.status == 'approved' %}
+                                                    <span class="badge bg-success text-white rounded-pill">Подтвержден</span>
+                                                {% elif doc.status == 'rejected' %}
+                                                    <span class="badge bg-danger text-white rounded-pill">Отказ</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'view_document' doc.id %}" class="btn btn-sm btn-info">Просмотреть</a>
+                                                <a href="{% url 'download_document' doc.id %}" class="btn btn-sm btn-secondary">Скачать</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-center">No accessible documents found.</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

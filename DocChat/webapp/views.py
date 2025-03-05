@@ -1,7 +1,9 @@
 
 from django.http import HttpResponse, Http404, FileResponse
 from django.contrib.auth import authenticate, login, logout
-from .models import CustomUser, AuditLog, Role, UserGroup
+from django.views.decorators.clickjacking import xframe_options_exempt
+
+from .models import CustomUser, AuditLog, Role, UserGroup, DocumentTransferHistory
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
@@ -106,7 +108,7 @@ def login_view(request):
             # Шаг 1: Ввод email и пароля
             email = request.POST.get("email")
             password = request.POST.get("password")
-            user = authenticate(request, username=email, password=password)
+            user = authenticate(request, email=email, password=password)
 
             if user:
                 # Генерируем и отправляем OTP
@@ -166,9 +168,18 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    """Отображает список документов, загруженных текущим пользователем."""
-    documents = Document.objects.filter(owner=request.user)
-    return render(request, "dashboard.html", {"documents": documents})
+    # Собственные документы
+    own_documents = Document.objects.filter(owner=request.user)
+    # Документы, расшаренные с пользователем:
+    # Пользователь получает доступ, если он указан в shared_users или входит в группу из shared_groups
+    shared_by_users = Document.objects.filter(shared_users=request.user)
+    shared_by_groups = Document.objects.filter(shared_groups__in=request.user.custom_groups.all())
+    accessible_documents = (shared_by_users | shared_by_groups).distinct()
+
+    return render(request, "dashboard.html", {
+        "documents": own_documents,
+        "accessible_documents": accessible_documents,
+    })
 
 @login_required
 def upload_document(request):
@@ -249,15 +260,88 @@ def delete_document(request, doc_id):
     messages.success(request, "Document deleted successfully.")
     return redirect('dashboard')
 
+
+@xframe_options_exempt
 @login_required
 def view_document(request, doc_id):
-    messages.success(request, "Document view_document")
-    return redirect('dashboard')
+    document = get_object_or_404(Document, id=doc_id)
+    file_url = get_minio_file_url(document.filename)  # Используем функцию
+    if request.method == "POST":
+        if "delete" in request.POST:
+            # Если документ удаляет его владелец, удаляем документ для всех
+            if request.user == document.owner:
+                document.delete()
+                messages.success(request, "Document deleted successfully for all users.")
+            else:
+                # Если не владелец, удаляем его только у текущего пользователя
+                if request.user in document.shared_users.all():
+                    document.shared_users.remove(request.user)
+                    messages.success(request, "Document removed from your accessible documents.")
+                else:
+                    messages.error(request, "You cannot delete this document from your list.")
+            return redirect("dashboard")
+        elif "send" in request.POST:
+            return redirect("send_document", doc_id=doc_id)
+        elif "download" in request.POST:
+            return redirect("download_document", doc_id=doc_id)
+
+    transfer_history = document.transfer_history.all().order_by('-timestamp')
+
+    return render(request, "documents/view_document.html", {
+        "document": document,
+        "transfer_history": transfer_history,
+        "file_url": file_url,
+
+    })
 
 @login_required
 def send_document(request, doc_id):
-    messages.success(request, "Document send_document")
-    return redirect('dashboard')
+    document = get_object_or_404(Document, id=doc_id)
+
+    # Проверка: разрешено ли пользователю пересылать документы
+    if not request.user.can_forward_documents:
+        messages.error(request, "You don't have permission to forward documents.")
+        return redirect("view_document", doc_id=doc_id)
+
+    if request.method == "POST":
+        # Получаем выбранные ID пользователей и групп
+        selected_user_ids = request.POST.getlist("users")
+        selected_group_ids = request.POST.getlist("groups")
+        notes = request.POST.get("notes", "")
+
+        # Добавляем пользователей к shared_users и создаём записи в истории
+        users_to_share = CustomUser.objects.filter(id__in=selected_user_ids)
+        for user in users_to_share:
+            document.shared_users.add(user)
+            DocumentTransferHistory.objects.create(
+                document=document,
+                sender=request.user,
+                recipient_user=user,
+                notes=notes
+            )
+
+        # Добавляем группы к shared_groups и создаём записи в истории
+        groups_to_share = UserGroup.objects.filter(id__in=selected_group_ids)
+        for group in groups_to_share:
+            document.shared_groups.add(group)
+            DocumentTransferHistory.objects.create(
+                document=document,
+                sender=request.user,
+                recipient_group=group,
+                notes=notes
+            )
+
+        messages.success(request, "Document sent successfully.")
+        return redirect("view_document", doc_id=doc_id)
+
+    # Для GET-запроса – показываем форму отправки
+    all_users = CustomUser.objects.exclude(id=request.user.id)
+    all_groups = UserGroup.objects.all()
+    return render(request, "documents/send_document.html", {
+        "document": document,
+        "all_users": all_users,
+        "all_groups": all_groups,
+    })
 
 def check_permission_to_users(user):
     """ Проверка, может ли пользователь управлять правами """

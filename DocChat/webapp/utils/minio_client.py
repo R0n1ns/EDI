@@ -1,4 +1,6 @@
 import io
+from datetime import timedelta
+
 from minio import Minio
 from django.conf import settings
 
@@ -72,3 +74,14 @@ def delete_file_from_minio(saved_filename: str):
     bucket_name = settings.MINIO_BUCKET_NAME
     response = client.remove_object(bucket_name, saved_filename)
     return response
+
+def get_minio_file_url(filename, expires=timedelta(hours=1)):
+    """Генерирует временную ссылку на файл из MinIO."""
+    client = get_minio_client()
+    bucket_name = settings.MINIO_BUCKET_NAME
+
+    try:
+        return client.presigned_get_object(bucket_name, filename, expires=expires)
+    except Exception as e:
+        print(f"Ошибка получения ссылки MinIO: {e}")
+        return None

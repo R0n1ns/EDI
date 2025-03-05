@@ -60,8 +60,8 @@ class CustomUser(AbstractUser):
     can_create_documents = models.BooleanField(default=True)        # создание документов
     can_sign_documents = models.BooleanField(default=False)         # подпись документов
     can_view_statistics = models.BooleanField(default=False)        # доступ к статистической информации
-    can_modify_groups = models.BooleanField(default=False)    # доступ к изменению пользователей/групп
-    can_modify_users = models.BooleanField(default=False)     # выдача прав
+    can_modify_groups = models.BooleanField(default=False)          # доступ к изменению групп
+    can_modify_users = models.BooleanField(default=False)           # выдача прав
 
     def generate_otp(self):
         self.otp = ''.join(secrets.choice('0123456789') for _ in range(6))
@@ -90,8 +90,10 @@ class CustomUser(AbstractUser):
 class UserGroup(models.Model):
     name = models.CharField(max_length=100, unique=True)
     members = models.ManyToManyField(CustomUser, related_name='custom_groups', blank=True)
-    documents = models.ManyToManyField('Document', related_name='groups', blank=True)
-    leader = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='leading_groups')
+    leader = models.ForeignKey(
+        CustomUser, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='leading_groups'
+    )
 
     def __str__(self):
         return self.name
@@ -107,29 +109,31 @@ class Document(models.Model):
     filename = models.CharField(max_length=255)
     original_filename = models.CharField(max_length=255)
     content_type = models.CharField(max_length=50)
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='owned_documents')
     is_encrypted = models.BooleanField(default=False)
     upload_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
-    # Ответственный за документ: может быть либо пользователь, либо группа
-    responsible_user = models.ForeignKey(
-        CustomUser, on_delete=models.SET_NULL,
-        blank=True, null=True, related_name='responsible_documents'
-    )
-    responsible_group = models.ForeignKey(
-        UserGroup, on_delete=models.SET_NULL,
-        blank=True, null=True, related_name='responsible_documents'
-    )
+
+    # Параметры отправки/общего доступа:
+    shared_users = models.ManyToManyField(CustomUser, related_name='shared_documents', blank=True)
+    shared_groups = models.ManyToManyField(UserGroup, related_name='shared_documents', blank=True)
 
     def __str__(self):
         return self.original_filename
 
+class DocumentTransferHistory(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='transfer_history')
+    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_document_transfers')
+    recipient_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='received_document_transfers')
+    recipient_group = models.ForeignKey(UserGroup, on_delete=models.CASCADE, null=True, blank=True, related_name='received_document_transfers')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Transfer of {self.document} from {self.sender} at {self.timestamp}"
+
 class AuditLog(models.Model):
-    user = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name='audit_logs'
-    )
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='audit_logs')
     action = models.CharField(max_length=50)
     timestamp = models.DateTimeField(auto_now_add=True)
     details = models.TextField()

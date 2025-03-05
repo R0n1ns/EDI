@@ -36,7 +36,6 @@ urlpatterns = [
     path('documents/<int:doc_id>/view/', views.view_document, name='view_document'),
     path('documents/<int:doc_id>/delete/', views.delete_document, name='delete_document'),
     path('documents/<int:doc_id>/send/', views.send_document, name='send_document'),
-
 ]
 from django.conf import settings
 from django.conf.urls.static import static
