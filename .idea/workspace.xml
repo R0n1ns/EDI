@@ -5,14 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19ac5b9e-6ccc-44de-907b-aeb8138f1933" name="Changes" comment="сделаны страницы управления группами и пользователями">
-      <change afterPath="$PROJECT_DIR$/DocChat/templates/documents/send_document.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DocChat/templates/documents/view_document.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DocChat/webapp/utils/auth.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DocChat/DocChat/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/DocChat/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DocChat/DocChat/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/DocChat/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DocChat/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/templates/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DocChat/webapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DocChat/webapp/utils/minio_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/utils/minio_client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/templates/admin/edit_user.html" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/templates/admin/edit_user.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/templates/admin/users_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/templates/admin/users_dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/templates/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/webapp/migrations/0006_usergroup_leader.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/webapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,13 +22,14 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Dockerfile" />
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -199,6 +198,17 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />

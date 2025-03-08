@@ -67,8 +67,8 @@
                                             {% if user.can_create_documents %}<li>📝 Create Documents</li>{% endif %}
                                             {% if user.can_sign_documents %}<li>✍️ Sign Documents</li>{% endif %}
                                             {% if user.can_view_statistics %}<li>📊 View Statistics</li>{% endif %}
-                                            {% if user.can_modify_users_groups %}<li>👥 Manage Users/Groups</li>{% endif %}
-                                            {% if user.can_assign_permissions %}<li>🔑 Assign Permissions</li>{% endif %}
+                                            {% if user.can_modify_users %}<li>👥 Manage Users/Groups</li>{% endif %}
+                                            {% if user.can_modify_groups %}<li>🔑 Assign Permissions</li>{% endif %}
                                         </ul>
                                     </td>
                                     <td>

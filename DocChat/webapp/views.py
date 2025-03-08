@@ -41,9 +41,9 @@ def register_view(request):
                 return redirect("register")
 
             # Проверка корпоративного email
-            if not (email.endswith("@company.com") or email.endswith("@corporate.org")):
-                messages.error(request, "Пожалуйста, используйте корпоративный email.")
-                return redirect("register")
+            # if not (email.endswith("@company.com") or email.endswith("@corporate.org")):
+            #     messages.error(request, "Пожалуйста, используйте корпоративный email.")
+            #     return redirect("register")
 
             # Сохраняем данные пользователя в сессии
             request.session["registration_email"] = email
