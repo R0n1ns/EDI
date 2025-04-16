@@ -29,11 +29,7 @@ def ensure_bucket_exists(bucket_name: str):
 
 def upload_file_to_minio(saved_filename: str, file_content: bytes, content_type: str):
     """
-    Загружает файл в MinIO.
-
-    :param saved_filename: Уникальное имя файла в MinIO.
-    :param file_content: Содержимое файла (байты).
-    :param content_type: MIME-тип файла.
+    Загружает файл в MinIO с поддержкой версионирования.
     """
     client = get_minio_client()
     bucket_name = settings.MINIO_BUCKET_NAME
@@ -49,6 +45,40 @@ def upload_file_to_minio(saved_filename: str, file_content: bytes, content_type:
         data_length,
         content_type=content_type
     )
+
+def get_file_versions(filename: str):
+    """
+    Получает все версии файла.
+    """
+    client = get_minio_client()
+    bucket_name = settings.MINIO_BUCKET_NAME
+    versions = []
+    
+    try:
+        for version in client.get_object_versions(bucket_name, filename):
+            versions.append({
+                'version_id': version.version_id,
+                'last_modified': version.last_modified,
+                'is_latest': version.is_latest
+            })
+    except Exception as e:
+        print(f"Error getting versions: {e}")
+        return []
+        
+    return versions
+
+def get_specific_version(filename: str, version_id: str):
+    """
+    Получает конкретную версию файла.
+    """
+    client = get_minio_client()
+    bucket_name = settings.MINIO_BUCKET_NAME
+    try:
+        response = client.get_object(bucket_name, filename, version_id=version_id)
+        return response
+    except Exception as e:
+        print(f"Error getting version {version_id}: {e}")
+        return None
 
 
 def download_file_from_minio(saved_filename: str):

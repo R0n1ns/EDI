@@ -1,4 +1,3 @@
-
 from django.http import HttpResponse, Http404, FileResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -286,12 +285,14 @@ def view_document(request, doc_id):
             return redirect("download_document", doc_id=doc_id)
 
     transfer_history = document.transfer_history.all().order_by('-timestamp')
+    # Placeholder for fetching versions from MinIO.  Replace with actual MinIO client call.
+    versions = get_minio_file_versions(document.filename) if hasattr(document, 'filename') else []
 
     return render(request, "documents/view_document.html", {
         "document": document,
         "transfer_history": transfer_history,
         "file_url": file_url,
-
+        "versions": versions,
     })
 
 @login_required

@@ -28,6 +28,23 @@
 
     <hr>
 
+    <div class="mt-3">
+        <h4>Document Versions</h4>
+        {% if versions %}
+        <div class="list-group">
+            {% for version in versions %}
+            <a href="?version={{ version.version_id }}" 
+               class="list-group-item list-group-item-action {% if version.is_latest %}active{% endif %}">
+                Version from {{ version.last_modified }}
+                {% if version.is_latest %}<span class="badge bg-primary">Latest</span>{% endif %}
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">No previous versions available.</p>
+        {% endif %}
+    </div>
+
     <button id="toggleHistory" class="btn btn-outline-info mt-3">
         <i data-feather="history"></i> View Transfer History
     </button>
