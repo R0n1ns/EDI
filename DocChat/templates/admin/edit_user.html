@@ -7,7 +7,15 @@
             <h2>Edit User: {{ user.full_name|default:user.username|title }}</h2>
             <p class="text-muted">Modify user details and permissions</p>
         </div>
-    </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button type="submit" name="generate_certificate" class="btn btn-warning">
+                            <i data-feather="key"></i> Generate New Certificate
+                        </button>
+                    </form>
+                </div>
+         </div>
 
     <div class="row">
         <div class="col-lg-8">
@@ -16,6 +24,7 @@
                     <h4 class="card-title mb-0">User Configuration</h4>
                 </div>
                 <div class="card-body">
+
                     <form method="POST">
                         {% csrf_token %}
 
