@@ -140,3 +140,19 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.action} at {self.timestamp}"
+
+
+class DocumentVersionHistory(models.Model):
+    document = models.ForeignKey(
+        Document,
+        on_delete=models.CASCADE,
+        related_name='version_history'
+    )
+    version_id = models.CharField(max_length=255)
+    file_size = models.BigIntegerField(null=True, blank=True)
+    etag = models.CharField(max_length=100, blank=True, null=True)
+    timestamp = models.DateTimeField(default=timezone.now)
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Version {self.version_id} of {self.document.original_filename} at {self.timestamp}"

@@ -5,16 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19ac5b9e-6ccc-44de-907b-aeb8138f1933" name="Changes" comment="доработка">
-      <change afterPath="$PROJECT_DIR$/DocChat/webapp/utils/signature.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/DocChat/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/DocChat/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/DocChat/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/DocChat/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DocChat/templates/admin/edit_user.html" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/templates/admin/edit_user.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/templates/documents/view_document.html" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/templates/documents/view_document.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/webapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DocChat/webapp/utils/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/utils/auth.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/webapp/utils/minio_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/utils/minio_client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/webapp/utils/otp_email.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/utils/otp_email.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/webapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,24 +58,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.manage.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/korob/OneDrive/Рабочий стол/проекты/dochat/.venv/Lib&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Docker.docker-compose.yml.minio: Compose Deployment.executor": "Run",
+    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
+    "Python.manage.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/korob/OneDrive/Рабочий стол/проекты/dochat/.venv/Lib",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\korob\OneDrive\Рабочий стол\проекты\dochat\DocChat\static" />
@@ -89,7 +88,7 @@
       <recent name="C:\Users\korob\OneDrive\Рабочий стол\проекты\dochat\примеры" />
     </key>
   </component>
-  <component name="RunManager" selected="Docker.docker-compose.yml: Compose Deployment">
+  <component name="RunManager" selected="Docker.docker-compose.yml.minio: Compose Deployment">
     <configuration name="manage" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="dochat" />
       <option name="ENV_FILES" value="" />
@@ -128,8 +127,22 @@
       </deployment>
       <method v="2" />
     </configuration>
+    <configuration name="docker-compose.yml.minio: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="services">
+            <list>
+              <option value="minio" />
+            </list>
+          </option>
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Docker.docker-compose.yml.minio: Compose Deployment" />
         <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
         <item itemvalue="Python.manage" />
       </list>
@@ -192,6 +205,8 @@
       <workItem from="1743273619488" duration="18000" />
       <workItem from="1743433260194" duration="49000" />
       <workItem from="1744789952456" duration="377000" />
+      <workItem from="1744796154481" duration="17000" />
+      <workItem from="1744796411634" duration="6546000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />

@@ -204,8 +204,6 @@ def upload_document(request):
         # encrypted_content = encrypt_data(file_content, settings.ENCRYPTION_KEY)
 
         # Загружаем зашифрованный файл в MinIO
-        upload_file_to_minio(saved_filename, file_content, file.content_type)
-
         # Сохраняем запись в БД
         document = Document.objects.create(
             filename=saved_filename,
@@ -214,6 +212,8 @@ def upload_document(request):
             owner=request.user,
             is_encrypted=True
         )
+
+        upload_file_to_minio(document, file_content, file.content_type)
 
         # Логируем действие
         AuditLog.objects.create(
@@ -238,7 +238,7 @@ def download_document(request, doc_id):
         return redirect("dashboard")
 
     try:
-        response = download_file_from_minio(document.filename)
+        response = download_file_from_minio(document)
     except Exception as e:
         messages.error(request, "File not found.")
         return redirect("dashboard")
@@ -255,8 +255,10 @@ def download_document(request, doc_id):
 @login_required
 def delete_document(request, doc_id):
     document = get_object_or_404(Document, id=doc_id, owner=request.user)
+    # Сначала удаляем файл из MinIO и создаём запись истории
+    delete_file_from_minio(document)
+    # Затем удаляем запись документа из базы данных
     document.delete()
-    delete_file_from_minio(document.filename)
     messages.success(request, "Document deleted successfully.")
     return redirect('dashboard')
 
@@ -265,11 +267,14 @@ def delete_document(request, doc_id):
 @login_required
 def view_document(request, doc_id):
     document = get_object_or_404(Document, id=doc_id)
-    file_url = get_minio_file_url(document.filename)  # Используем функцию
+    file_url = get_minio_file_url(document)  # Используем функцию
     if request.method == "POST":
         if "delete" in request.POST:
             # Если документ удаляет его владелец, удаляем документ для всех
             if request.user == document.owner:
+                # Сначала удаляем файл из MinIO и создаём запись истории
+                delete_file_from_minio(document)
+                # Затем удаляем запись документа из базы данных
                 document.delete()
                 messages.success(request, "Document deleted successfully for all users.")
             else:

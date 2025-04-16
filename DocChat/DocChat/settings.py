@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -150,9 +151,9 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 ENCRYPTION_KEY = os.environ.get("ENCRYPTION_KEY", "0123456789ABCDEF0123456789ABCDEF").encode('utf-8')
 
 
-
 MINIO_ENDPOINT = '127.0.0.1:9000'
 MINIO_ACCESS_KEY = 'minioadmin'
 MINIO_SECRET_KEY = 'minioadmin'
 MINIO_BUCKET_NAME = 'data'
 MINIO_SECURE = False  # или False, если не используется TLS
+LOGIN_URL = '/auth/login/'

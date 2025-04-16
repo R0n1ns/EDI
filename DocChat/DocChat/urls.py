@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
+from django.views.generic import RedirectView
 
 from webapp import views
 
@@ -36,6 +37,8 @@ urlpatterns = [
     path('documents/<int:doc_id>/view/', views.view_document, name='view_document'),
     path('documents/<int:doc_id>/delete/', views.delete_document, name='delete_document'),
     path('documents/<int:doc_id>/send/', views.send_document, name='send_document'),
+    path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
+
 ]
 from django.conf import settings
 from django.conf.urls.static import static

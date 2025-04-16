@@ -19,6 +19,7 @@ def send_otp_email(recipient_email, otp_code):
     """
     subject = "Ваш одноразовый пароль (OTP)"
     message = f"Ваш одноразовый пароль: {otp_code}. Он действителен в течение 10 минут."
+    print(recipient_email,otp_code)
     from_email = settings.DEFAULT_FROM_EMAIL
 
     send_mail(subject, message, from_email, [recipient_email], fail_silently=False)
