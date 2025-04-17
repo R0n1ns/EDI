@@ -1,5 +1,6 @@
+import tempfile
 
-from django.http import HttpResponse, Http404, FileResponse
+from django.http import HttpResponse, Http404, FileResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.clickjacking import xframe_options_exempt
 
@@ -10,6 +11,7 @@ from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 from .utils.otp_email import generate_otp, send_otp_email
 from datetime import datetime
+from django.utils import timezone as dj_timezone
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -20,6 +22,14 @@ from .utils.minio_client import *
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from .models import Document
+from .utils.signature import create_and_save_certificate, load_signer, verify_pdf_bytes, sign_pdf_document
+import io
+from .models import DigitalCertificate
+
+from pyhanko.sign import signers, fields
+from pyhanko.pdf_utils.reader import PdfFileReader
+from pyhanko.pdf_utils.writer import PdfFileWriter
+
 User = get_user_model()
 
 def register_view(request):
@@ -380,6 +390,21 @@ def edit_role(request, user_id):
     user_groups = UserGroup.objects.all()
 
     if request.method == "POST":
+        # Если нажата кнопка генерации сертификата
+        if "generate_certificate" in request.POST:
+            try:
+                # Здесь пароль для PKCS#12. В реальном приложении его следует генерировать или запрашивать
+                pkcs12_password = b'password'
+                certificate = create_and_save_certificate(user, pkcs12_password, validity_days=365)
+                messages.success(
+                    request,
+                    f"Новый сертификат успешно создан. Серийный номер: {certificate.serial_number}"
+                )
+            except Exception as e:
+                messages.error(request, f"Ошибка генерации сертификата: {str(e)}")
+            return redirect("admin_roles_dashboard")
+
+        # Обновление основных данных пользователя
         user.username = request.POST.get("username", user.username)
         user.email = request.POST.get("email", user.email)
         user.full_name = request.POST.get("full_name", user.full_name)
@@ -403,7 +428,7 @@ def edit_role(request, user_id):
             setattr(user, perm, perm in request.POST)
 
         user.save()
-        messages.success(request, "User details updated successfully.")
+        messages.success(request, "Данные пользователя успешно обновлены.")
         return redirect("admin_roles_dashboard")
 
     return render(request, "admin/edit_user.html", {"user": user, "user_groups": user_groups})
@@ -438,7 +463,11 @@ def create_user(request):
             full_name=full_name,
             job_title=job_title
         )
+        # Пароль для защиты PKCS#12 контейнера. Пароль должен быть в байтовом формате.
+        pkcs12_password = b'password'
 
+        # Создаем и сохраняем сертификат для пользователя
+        certificate = create_and_save_certificate(user, pkcs12_password, validity_days=365)
         # Применяем группы
         selected_group_ids = request.POST.getlist("groups")
         user.custom_groups.set(UserGroup.objects.filter(id__in=selected_group_ids))
@@ -544,3 +573,83 @@ def add_group(request):
     return render(request, "admin/add_group.html", {
         "all_users": all_users
     })
+
+
+@login_required
+def sign_document(request, doc_id):
+    """
+    Обработчик для подписи PDF-документа текущим пользователем.
+    Возвращает JSON: {success: bool, error?: str}
+    """
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
+
+    document = get_object_or_404(Document, id=doc_id, owner=request.user)
+
+    # Получаем действующий (неотозванный, неистекший) сертификат
+    cert = DigitalCertificate.objects.filter(
+        user=request.user,
+        is_revoked=False,
+        expires_at__gt=dj_timezone.now()
+    ).last()
+
+    if not cert:
+        return JsonResponse({'success': False, 'error': 'Valid certificate not found'}, status=400)
+
+    try:
+        # Шаг 1: Скачиваем PDF из MinIO
+        minio_response = download_file_from_minio(document)
+        input_pdf_bytes = minio_response.read()
+
+        # Шаг 2: Временные файлы для подписания
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as input_pdf:
+            input_pdf.write(input_pdf_bytes)
+            input_pdf_path = input_pdf.name
+
+        output_pdf_path = input_pdf_path.replace('.pdf', '_signed.pdf')
+
+        # TODO: Получи реальный пароль пользователя (например, через форму, сессии и т.д.)
+        pkcs12_password = b'password'
+
+        # Шаг 3: Подписываем PDF
+        sign_pdf_document(
+            document=document,
+            certificate=cert,
+            pkcs12_password=pkcs12_password
+        )
+
+        # Шаг 4: Загружаем подписанный PDF обратно в MinIO
+        with open(output_pdf_path, 'rb') as signed_file:
+            signed_pdf_bytes = signed_file.read()
+            upload_file_to_minio(document, signed_pdf_bytes, content_type=document.content_type)
+
+        return JsonResponse({'success': True})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@login_required
+def verify_document(request, doc_id):
+    """
+    AJAX‑обработчик GET для проверки подписей в документе.
+    Возвращает JSON вида { verified: [<CN1>, <CN2>, ...], error?: <msg> }.
+    """
+    document = get_object_or_404(Document, id=doc_id)
+    try:
+        # 1. Скачиваем PDF из MinIO
+        response = download_file_from_minio(document)
+        pdf_bytes = response.read()
+
+        # 2. Собираем доверенные корни из актуальных (не отозванных) сертификатов
+        trust_roots = list(
+            DigitalCertificate.objects
+            .filter(is_revoked=False, expires_at__gt=dj_timezone.now())
+            .values_list('certificate_pem', flat=True)
+        )
+
+        # 3. Запускаем верификацию
+        verified = verify_pdf_bytes(pdf_bytes, trust_roots)
+
+        return JsonResponse({'verified': verified})
+    except Exception as e:
+        return JsonResponse({'verified': [], 'error': str(e)}, status=500)

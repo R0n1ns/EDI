@@ -156,3 +156,40 @@ class DocumentVersionHistory(models.Model):
 
     def __str__(self):
         return f"Version {self.version_id} of {self.document.original_filename} at {self.timestamp}"
+
+
+# Модель для хранения цифровых сертификатов (ЭЦП)
+class DigitalCertificate(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='certificates')
+    serial_number = models.CharField(max_length=100, unique=True)
+    certificate_pem = models.TextField(help_text="Открытый сертификат в формате PEM")
+    pkcs12_file = models.FileField(
+        upload_to='certificates/', blank=True, null=True,
+        help_text="PKCS#12 контейнер (с расширением .p12/.pfx) с закрытым ключом"
+    )
+    issued_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField()
+    is_revoked = models.BooleanField(default=False)
+    # Если храните закрытый ключ в БД – обязательно шифруйте его
+    encrypted_private_key = models.TextField(
+        blank=True, null=True,
+        help_text="Зашифрованный закрытый ключ (если хранится в БД)"
+    )
+
+    def __str__(self):
+        return f"Certificate {self.serial_number} for {self.user}"
+
+# Модель для логирования операций подписания PDF
+class PdfSignatureLog(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='pdf_signatures')
+    certificate = models.ForeignKey(DigitalCertificate, on_delete=models.SET_NULL, null=True, blank=True)
+    signature_date = models.DateTimeField(auto_now_add=True)
+    document_hash = models.CharField(max_length=255, help_text="Хэш подписанного документа")
+    signature_data = models.TextField(
+        blank=True, null=True,
+        help_text="Данные подписи (например, в base64-формате)"
+    )
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Signature for {self.document} on {self.signature_date}"

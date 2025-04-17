@@ -4,15 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19ac5b9e-6ccc-44de-907b-aeb8138f1933" name="Changes" comment="доработка">
+    <list default="true" id="19ac5b9e-6ccc-44de-907b-aeb8138f1933" name="Changes" comment="загрузка файлов ,работа с версиями">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DocChat/DocChat/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/DocChat/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/DocChat/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/DocChat/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/templates/documents/view_document.html" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/templates/documents/view_document.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/webapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DocChat/webapp/utils/minio_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/utils/minio_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DocChat/webapp/utils/otp_email.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/utils/otp_email.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/webapp/utils/signature.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/utils/signature.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/webapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/webapp/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -58,25 +56,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Docker.docker-compose.yml.minio: Compose Deployment.executor": "Run",
-    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
-    "Python.manage.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/korob/OneDrive/Рабочий стол/проекты/dochat/.venv/Lib",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Docker.docker-compose.yml.minio: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.manage.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/korob/OneDrive/Рабочий стол/проекты/dochat/.venv/Lib&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\korob\OneDrive\Рабочий стол\проекты\dochat\DocChat\static" />
@@ -206,7 +204,13 @@
       <workItem from="1743433260194" duration="49000" />
       <workItem from="1744789952456" duration="377000" />
       <workItem from="1744796154481" duration="17000" />
-      <workItem from="1744796411634" duration="6546000" />
+      <workItem from="1744796411634" duration="7899000" />
+      <workItem from="1744828149221" duration="2433000" />
+      <workItem from="1744865724868" duration="4000" />
+      <workItem from="1744866983462" duration="2061000" />
+      <workItem from="1744895622313" duration="4186000" />
+      <workItem from="1744904952938" duration="1052000" />
+      <workItem from="1744908594925" duration="1149000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -240,7 +244,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741467575184</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="загрузка файлов ,работа с версиями">
+      <option name="closed" value="true" />
+      <created>1744803879317</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1744803879318</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -262,7 +274,8 @@
     <MESSAGE value="сделаны minio, сайт ,вход, регистрация ,подтверждение по почте при регистрации и входе" />
     <MESSAGE value="сделаны страницы управления группами и пользователями" />
     <MESSAGE value="доработка" />
-    <option name="LAST_COMMIT_MESSAGE" value="доработка" />
+    <MESSAGE value="загрузка файлов ,работа с версиями" />
+    <option name="LAST_COMMIT_MESSAGE" value="загрузка файлов ,работа с версиями" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/dochat$manage.coverage" NAME="manage Coverage Results" MODIFIED="1740574986013" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DocChat" />
