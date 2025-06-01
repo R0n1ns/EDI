@@ -4,8 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19ac5b9e-6ccc-44de-907b-aeb8138f1933" name="Changes" comment="загрузка файлов ,работа с версиями">
+    <list default="true" id="19ac5b9e-6ccc-44de-907b-aeb8138f1933" name="Changes" comment="доделана загрузка и взаимодействие ,начата работа над подписью документов">
+      <change afterPath="$PROJECT_DIR$/app/gui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dochat.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dochat.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.notused/описание.txt" beforeDir="false" afterPath="$PROJECT_DIR$/.notused/описание.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DocChat/DocChat/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/DocChat/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/DocChat/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/DocChat/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DocChat/templates/documents/view_document.html" beforeDir="false" afterPath="$PROJECT_DIR$/DocChat/templates/documents/view_document.html" afterDir="false" />
@@ -25,6 +30,17 @@
         <option value="HTML File" />
         <option value="Python Script" />
       </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform)); sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo, NoAppException&#10;for module in [&quot;main.py&quot;, &quot;wsgi.py&quot;, &quot;app.py&quot;]:&#10;    try: locals().update(ScriptInfo(app_import_path=module, create_app=None).load_app().make_shell_context()); print(&quot;\nFlask App: %s&quot; % app.import_name); break&#10;    except NoAppException: pass">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform)); sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo, NoAppException&#10;for module in [&quot;main.py&quot;, &quot;wsgi.py&quot;, &quot;app.py&quot;]:&#10;    try: locals().update(ScriptInfo(app_import_path=module, create_app=None).load_app().make_shell_context()); print(&quot;\nFlask App: %s&quot; % app.import_name); break&#10;    except NoAppException: pass" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
     </option>
   </component>
   <component name="Git.Settings">
@@ -51,42 +67,68 @@
   &quot;associatedIndex&quot;: 6
 }</component>
   <component name="ProjectId" id="2tZz8yY6OTt5M72rHlzAat7ZXx7" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Docker.docker-compose.yml.minio: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.manage.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/korob/OneDrive/Рабочий стол/проекты/dochat/.venv/Lib&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Docker.docchat v2: Compose Deployment.executor": "Run",
+    "Docker.docker-compose.yml.minio: Compose Deployment.executor": "Run",
+    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
+    "Python.gui.executor": "Run",
+    "Python.manage.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "C:/Users/korob/OneDrive/Рабочий стол/проекты/last vers/dochat",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\korob\OneDrive\Рабочий стол\проекты\dochat\DocChat\static" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\korob\OneDrive\Рабочий стол\проекты\last vers\dochat\app" />
       <recent name="C:\Users\korob\OneDrive\Рабочий стол\проекты\dochat\DocChat\templates\documents" />
       <recent name="C:\Users\korob\OneDrive\Рабочий стол\проекты\dochat\DocChat\webapp\utils" />
       <recent name="C:\Users\korob\OneDrive\Рабочий стол\проекты\dochat\.notused" />
       <recent name="C:\Users\korob\OneDrive\Рабочий стол\проекты\dochat\примеры" />
     </key>
   </component>
-  <component name="RunManager" selected="Docker.docker-compose.yml.minio: Compose Deployment">
+  <component name="RunManager" selected="Python.gui">
+    <configuration name="gui" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="dochat" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DocChat" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\korob\OneDrive\Рабочий стол\проекты\last vers\dochat\app\gui.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="manage" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="dochat" />
       <option name="ENV_FILES" value="" />
@@ -116,6 +158,14 @@
       </deployment>
       <method v="2" />
     </configuration>
+    <configuration name="docchat v2: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value="docchat v2/docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
     <configuration name="docker-compose.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
       <deployment type="docker-compose.yml">
         <settings>
@@ -140,17 +190,19 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Docker.docker-compose.yml.minio: Compose Deployment" />
+        <item itemvalue="Python.gui" />
         <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
+        <item itemvalue="Docker.docker-compose.yml.minio: Compose Deployment" />
         <item itemvalue="Python.manage" />
+        <item itemvalue="Docker.docchat v2: Compose Deployment" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-PY-243.26053.29" />
-        <option value="bundled-python-sdk-b1dbf8ef85a6-4df51de95216-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.26053.29" />
+        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-PY-251.23774.444" />
+        <option value="bundled-python-sdk-890ed5b35930-d9c5bdb153f4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.23774.444" />
       </set>
     </attachedChunks>
   </component>
@@ -210,7 +262,12 @@
       <workItem from="1744866983462" duration="2061000" />
       <workItem from="1744895622313" duration="4186000" />
       <workItem from="1744904952938" duration="1052000" />
-      <workItem from="1744908594925" duration="1149000" />
+      <workItem from="1744908594925" duration="1486000" />
+      <workItem from="1745082177075" duration="1940000" />
+      <workItem from="1745161718817" duration="648000" />
+      <workItem from="1745165250295" duration="759000" />
+      <workItem from="1745306510757" duration="256000" />
+      <workItem from="1748806689734" duration="3056000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -252,7 +309,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744803879318</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="доделана загрузка и взаимодействие ,начата работа над подписью документов">
+      <option name="closed" value="true" />
+      <created>1744910214555</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1744910214555</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -275,9 +340,11 @@
     <MESSAGE value="сделаны страницы управления группами и пользователями" />
     <MESSAGE value="доработка" />
     <MESSAGE value="загрузка файлов ,работа с версиями" />
-    <option name="LAST_COMMIT_MESSAGE" value="загрузка файлов ,работа с версиями" />
+    <MESSAGE value="доделана загрузка и взаимодействие ,начата работа над подписью документов" />
+    <option name="LAST_COMMIT_MESSAGE" value="доделана загрузка и взаимодействие ,начата работа над подписью документов" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/dochat$manage.coverage" NAME="manage Coverage Results" MODIFIED="1740574986013" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DocChat" />
+    <SUITE FILE_PATH="coverage/dochat$manage.coverage" NAME="manage Coverage Results" MODIFIED="1748807051393" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DocChat" />
+    <SUITE FILE_PATH="coverage/dochat$gui.coverage" NAME="gui Coverage Results" MODIFIED="1748808265781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DocChat" />
   </component>
 </project>

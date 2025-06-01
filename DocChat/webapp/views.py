@@ -22,9 +22,7 @@ from .utils.minio_client import *
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from .models import Document
-from .utils.signature import create_and_save_certificate, load_signer, verify_pdf_bytes, sign_pdf_document
 import io
-from .models import DigitalCertificate
 
 from pyhanko.sign import signers, fields
 from pyhanko.pdf_utils.reader import PdfFileReader
@@ -575,81 +573,81 @@ def add_group(request):
     })
 
 
-@login_required
-def sign_document(request, doc_id):
-    """
-    Обработчик для подписи PDF-документа текущим пользователем.
-    Возвращает JSON: {success: bool, error?: str}
-    """
-    if request.method != 'POST':
-        return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
-
-    document = get_object_or_404(Document, id=doc_id, owner=request.user)
-
-    # Получаем действующий (неотозванный, неистекший) сертификат
-    cert = DigitalCertificate.objects.filter(
-        user=request.user,
-        is_revoked=False,
-        expires_at__gt=dj_timezone.now()
-    ).last()
-
-    if not cert:
-        return JsonResponse({'success': False, 'error': 'Valid certificate not found'}, status=400)
-
-    try:
-        # Шаг 1: Скачиваем PDF из MinIO
-        minio_response = download_file_from_minio(document)
-        input_pdf_bytes = minio_response.read()
-
-        # Шаг 2: Временные файлы для подписания
-        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as input_pdf:
-            input_pdf.write(input_pdf_bytes)
-            input_pdf_path = input_pdf.name
-
-        output_pdf_path = input_pdf_path.replace('.pdf', '_signed.pdf')
-
-        # TODO: Получи реальный пароль пользователя (например, через форму, сессии и т.д.)
-        pkcs12_password = b'password'
-
-        # Шаг 3: Подписываем PDF
-        sign_pdf_document(
-            document=document,
-            certificate=cert,
-            pkcs12_password=pkcs12_password
-        )
-
-        # Шаг 4: Загружаем подписанный PDF обратно в MinIO
-        with open(output_pdf_path, 'rb') as signed_file:
-            signed_pdf_bytes = signed_file.read()
-            upload_file_to_minio(document, signed_pdf_bytes, content_type=document.content_type)
-
-        return JsonResponse({'success': True})
-
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
-
-@login_required
-def verify_document(request, doc_id):
-    """
-    AJAX‑обработчик GET для проверки подписей в документе.
-    Возвращает JSON вида { verified: [<CN1>, <CN2>, ...], error?: <msg> }.
-    """
-    document = get_object_or_404(Document, id=doc_id)
-    try:
-        # 1. Скачиваем PDF из MinIO
-        response = download_file_from_minio(document)
-        pdf_bytes = response.read()
-
-        # 2. Собираем доверенные корни из актуальных (не отозванных) сертификатов
-        trust_roots = list(
-            DigitalCertificate.objects
-            .filter(is_revoked=False, expires_at__gt=dj_timezone.now())
-            .values_list('certificate_pem', flat=True)
-        )
-
-        # 3. Запускаем верификацию
-        verified = verify_pdf_bytes(pdf_bytes, trust_roots)
-
-        return JsonResponse({'verified': verified})
-    except Exception as e:
-        return JsonResponse({'verified': [], 'error': str(e)}, status=500)
+# @login_required
+# def sign_document(request, doc_id):
+#     """
+#     Обработчик для подписи PDF-документа текущим пользователем.
+#     Возвращает JSON: {success: bool, error?: str}
+#     """
+#     if request.method != 'POST':
+#         return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
+#
+#     document = get_object_or_404(Document, id=doc_id, owner=request.user)
+#
+#     # Получаем действующий (неотозванный, неистекший) сертификат
+#     cert = DigitalCertificate.objects.filter(
+#         user=request.user,
+#         is_revoked=False,
+#         expires_at__gt=dj_timezone.now()
+#     ).last()
+#
+#     if not cert:
+#         return JsonResponse({'success': False, 'error': 'Valid certificate not found'}, status=400)
+#
+#     try:
+#         # Шаг 1: Скачиваем PDF из MinIO
+#         minio_response = download_file_from_minio(document)
+#         input_pdf_bytes = minio_response.read()
+#
+#         # Шаг 2: Временные файлы для подписания
+#         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as input_pdf:
+#             input_pdf.write(input_pdf_bytes)
+#             input_pdf_path = input_pdf.name
+#
+#         output_pdf_path = input_pdf_path.replace('.pdf', '_signed.pdf')
+#
+#         # TODO: Получи реальный пароль пользователя (например, через форму, сессии и т.д.)
+#         pkcs12_password = b'password'
+#
+#         # Шаг 3: Подписываем PDF
+#         sign_pdf_document(
+#             document=document,
+#             certificate=cert,
+#             pkcs12_password=pkcs12_password
+#         )
+#
+#         # Шаг 4: Загружаем подписанный PDF обратно в MinIO
+#         with open(output_pdf_path, 'rb') as signed_file:
+#             signed_pdf_bytes = signed_file.read()
+#             upload_file_to_minio(document, signed_pdf_bytes, content_type=document.content_type)
+#
+#         return JsonResponse({'success': True})
+#
+#     except Exception as e:
+#         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+#
+# @login_required
+# def verify_document(request, doc_id):
+#     """
+#     AJAX‑обработчик GET для проверки подписей в документе.
+#     Возвращает JSON вида { verified: [<CN1>, <CN2>, ...], error?: <msg> }.
+#     """
+#     document = get_object_or_404(Document, id=doc_id)
+#     try:
+#         # 1. Скачиваем PDF из MinIO
+#         response = download_file_from_minio(document)
+#         pdf_bytes = response.read()
+#
+#         # 2. Собираем доверенные корни из актуальных (не отозванных) сертификатов
+#         trust_roots = list(
+#             DigitalCertificate.objects
+#             .filter(is_revoked=False, expires_at__gt=dj_timezone.now())
+#             .values_list('certificate_pem', flat=True)
+#         )
+#
+#         # 3. Запускаем верификацию
+#         verified = verify_pdf_bytes(pdf_bytes, trust_roots)
+#
+#         return JsonResponse({'verified': verified})
+#     except Exception as e:
+#         return JsonResponse({'verified': [], 'error': str(e)}, status=500)

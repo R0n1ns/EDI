@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-eid8+argo%+*%)qd22pz$%v)+_^76)y1=k!4p#ahvftp+a3brw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 AUTHENTICATION_BACKENDS = [
 'webapp.utils.auth.EmailBackend',
@@ -157,3 +157,15 @@ MINIO_SECRET_KEY = 'minioadmin'
 MINIO_BUCKET_NAME = 'data'
 MINIO_SECURE = False  # или False, если не используется TLS
 LOGIN_URL = '/auth/login/'
+
+
+# Настройки для десктопного клиента
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'ваш-ip-адрес']
+
+# Для работы с внешними запросами
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
+
+# Важно для вложенных URL
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

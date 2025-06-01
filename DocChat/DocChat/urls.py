@@ -37,8 +37,8 @@ urlpatterns = [
     path('documents/<int:doc_id>/view/', views.view_document, name='view_document'),
     path('documents/<int:doc_id>/delete/', views.delete_document, name='delete_document'),
     path('documents/<int:doc_id>/send/', views.send_document, name='send_document'),
-    path('documents/<int:doc_id>/sign/', views.sign_document, name='sign_document'),
-    path('documents/<int:doc_id>/verify/', views.verify_document, name='verify_document'),
+    # path('documents/<int:doc_id>/sign/', views.sign_document, name='sign_document'),
+    # path('documents/<int:doc_id>/verify/', views.verify_document, name='verify_document'),
     path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
 
 ]

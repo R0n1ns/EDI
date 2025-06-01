@@ -74,17 +74,17 @@
 
     <hr>
 
-    <div class="btn-group mt-3">
-        {% if document.content_type == "application/pdf" %}
-        <button id="signDocument" class="btn btn-success">
-            <i data-feather="edit"></i> Sign Document
-        </button>
-        <button id="verifySignature" class="btn btn-warning">
-            <i data-feather="check-circle"></i> Verify Signature
-        </button>
-                {% endif %}
-
-    </div>
+{#    <div class="btn-group mt-3">#}
+{#        {% if document.content_type == "application/pdf" %}#}
+{#        <button id="signDocument" class="btn btn-success">#}
+{#            <i data-feather="edit"></i> Sign Document#}
+{#        </button>#}
+{#        <button id="verifySignature" class="btn btn-warning">#}
+{#            <i data-feather="check-circle"></i> Verify Signature#}
+{#        </button>#}
+{#                {% endif %}#}
+{##}
+{#    </div>#}
 
     <!-- Всплывающее уведомление -->
     <div id="notification" class="alert alert-info" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 1000;">
@@ -124,36 +124,36 @@ function showNotification(message, type="info") {
     }, 5000);
 }
 
-// Подписание документа
-document.getElementById('signDocument').addEventListener('click', function() {
-    fetch("{% url 'sign_document' document.id %}", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}"
-        }
-    }).then(response => response.json()).then(data => {
-        if (data.success) {
-            showNotification("Документ успешно подписан.", "success");
-        } else {
-            showNotification("Ошибка: " + data.error, "danger");
-        }
-    }).catch(error => {
-        showNotification("Ошибка сети.", "danger");
-    });
-});
-
-// Проверка подписей
-document.getElementById('verifySignature').addEventListener('click', function() {
-    fetch("{% url 'verify_document' document.id %}").then(response => response.json()).then(data => {
-        if (data.verified.length > 0) {
-            showNotification("Документ подписан пользователями: " + data.verified.join(", "), "success");
-        } else {
-            showNotification("Подписей не найдено или они недействительны.", "warning");
-        }
-    }).catch(error => {
-        showNotification("Ошибка сети.", "danger");
-    });
-});
+{#// Подписание документа#}
+{#document.getElementById('signDocument').addEventListener('click', function() {#}
+{#    fetch("{% url 'sign_document' document.id %}", {#}
+{#        method: "POST",#}
+{#        headers: {#}
+{#            "X-CSRFToken": "{{ csrf_token }}"#}
+{#        }#}
+{#    }).then(response => response.json()).then(data => {#}
+{#        if (data.success) {#}
+{#            showNotification("Документ успешно подписан.", "success");#}
+{#        } else {#}
+{#            showNotification("Ошибка: " + data.error, "danger");#}
+{#        }#}
+{#    }).catch(error => {#}
+{#        showNotification("Ошибка сети.", "danger");#}
+{#    });#}
+{#});#}
+{##}
+{#// Проверка подписей#}
+{#document.getElementById('verifySignature').addEventListener('click', function() {#}
+{#    fetch("{% url 'verify_document' document.id %}").then(response => response.json()).then(data => {#}
+{#        if (data.verified.length > 0) {#}
+{#            showNotification("Документ подписан пользователями: " + data.verified.join(", "), "success");#}
+{#        } else {#}
+{#            showNotification("Подписей не найдено или они недействительны.", "warning");#}
+{#        }#}
+{#    }).catch(error => {#}
+{#        showNotification("Ошибка сети.", "danger");#}
+{#    });#}
+{#});#}
 </script>
 
 {% endblock %}
